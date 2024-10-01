@@ -23,13 +23,51 @@ function verifyShopifyWebhook(req, res, next){
     const generatedHash = crypto.createHmac('sha256', process.env.SHOPIFY_WEBHOOK_SECRET).update(req.rawBody, 'utf8').digest('base64');
 
     if(hmacHeader === generatedHash){
-
         return next(); // confirming valid webhook
     } else {
 
         return res.status(401).send('Unauthorized - Invalid HMAC signature'); // Invalid webhook
     }
 }
+
+// Function to send print job to PrintNode
+async function printOrder(orderDetails) {
+    const apiKey = process.env.PRINTNODE_API_KEY;
+    const printerId = process.env.PRINTER_ID;
+  
+    // Create receipt content
+    const printContent = `
+      Order ID: ${orderDetails.orderId}
+      Customer: ${orderDetails.customerName}
+      ------------------------------
+      ${orderDetails.lineItems.map(item => `${item.quantity} x ${item.name} - $${item.unitPrice}`).join('\n')}
+      ------------------------------
+      Total: $${orderDetails.totalPrice}
+    `;
+  
+    try {
+      const response = await axios.post(
+        'https://api.printnode.com/printjobs',
+        {
+          printer: printerId,
+          title: `Order #${orderDetails.orderId}`,
+          contentType: 'raw_base64',
+          content: Buffer.from(printContent).toString('base64'),
+          source: 'Shopify Order Webhook',
+        },
+        {
+          auth: {
+            username: apiKey,
+            password: '', // No password needed, API key as username
+          },
+        }
+      );
+  
+      console.log('Print job created:', response.data);
+    } catch (error) {
+      console.error('Error sending print job:', error.response ? error.response.data : error.message);
+    }
+  }
 
 app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     try{
@@ -61,6 +99,9 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
         lineItems,
         totalPrice
     });
+
+    // Send order details to PrintNode for printing
+    await printOrder({ orderId, customerName, lineItems, totalPrice });
 
     res.status(200).send('Order received and print job sent');
     console.log("Success");
