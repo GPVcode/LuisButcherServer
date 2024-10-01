@@ -25,16 +25,17 @@ function verifyShopifyWebhook(req, res, next){
     if(hmacHeader === generatedHash){
         return next(); // confirming valid webhook
     } else {
-
         return res.status(401).send('Unauthorized - Invalid HMAC signature'); // Invalid webhook
     }
 }
 
 // Function to send print job to PrintNode
 async function printOrder(orderDetails) {
+
+    console.log("Order Details: ", orderDetails);
     const apiKey = process.env.PRINTNODE_API_KEY;
     const printerId = process.env.PRINTER_ID;
-  
+
     // Create receipt content
     const printContent = `
       Order ID: ${orderDetails.orderId}
@@ -44,29 +45,32 @@ async function printOrder(orderDetails) {
       ------------------------------
       Total: $${orderDetails.totalPrice}
     `;
+
+    console.log("Printing content: ", printContent);
+    console.log("Print order function confirmed");
+
+    // try {
+    //   const response = await axios.post(
+    //     'https://api.printnode.com/printjobs',
+    //     {
+    //       printer: printerId,
+    //       title: `Order #${orderDetails.orderId}`,
+    //       contentType: 'raw_base64',
+    //       content: Buffer.from(printContent).toString('base64'),
+    //       source: 'Shopify Order Webhook',
+    //     },
+    //     {
+    //       auth: {
+    //         username: apiKey,
+    //         password: '', // No password needed, API key as username
+    //       },
+    //     }
+    //   );
   
-    try {
-      const response = await axios.post(
-        'https://api.printnode.com/printjobs',
-        {
-          printer: printerId,
-          title: `Order #${orderDetails.orderId}`,
-          contentType: 'raw_base64',
-          content: Buffer.from(printContent).toString('base64'),
-          source: 'Shopify Order Webhook',
-        },
-        {
-          auth: {
-            username: apiKey,
-            password: '', // No password needed, API key as username
-          },
-        }
-      );
-  
-      console.log('Print job created:', response.data);
-    } catch (error) {
-      console.error('Error sending print job:', error.response ? error.response.data : error.message);
-    }
+    //   console.log('Print job created:', response.data);
+    // } catch (error) {
+    //   console.error('Error sending print job:', error.response ? error.response.data : error.message);
+    // }
   }
 
 app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
@@ -93,12 +97,12 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     console.log("Line Items: ", lineItems);
     console.log("Total Price: ", totalPrice);
 
-    await axios.post('http://10.0.0.3:3000/print', {
-        orderId,
-        customerName,
-        lineItems,
-        totalPrice
-    });
+    // await axios.post('http://10.0.0.3:3000/print', {
+    //     orderId,
+    //     customerName,
+    //     lineItems,
+    //     totalPrice
+    // });
 
     // Send order details to PrintNode for printing
     await printOrder({ orderId, customerName, lineItems, totalPrice });
@@ -109,37 +113,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
         console.error('Error processing Shopify order: ', error);
         res.status(500).send('Internal server error');
     }
-    // Format data for Clover POS
-    // const cloverOrderData = {
-    //     items: lineItems.map(item => ({
-    //         name: item.name,
-    //         price: Math.round(parseFloat(item.price) * 100), // Clover API expects price in cents
-    //         quantity: item.quantity,
-    //     })),
-    //     customer: {
-    //         email: customerEmail,
-    //         firstName: orderData.customer.first_name,
-    //         lastName: orderData.customer.last_name,
-    //     },
-    //     order: {
-    //         id: orderId,
-    //         total: Math.round(parseFloat(totalPrice) * 100),
-    //     }
-    // };
-    // try {
-    //      // Send formatted order data to Clover POS
-    //      await axios.post('https://api.clover.com/v3/merchants/{merchantId}/orders', cloverOrderData, {
-    //         headers: {
-    //             'Authorization': 'Bearer {your_clover_api_token}',
-    //             'Content-Type': 'application/json'
-    //         }
-    //     });
 
-    //     res.status(200).send('Order sent to Clover');
-    // } catch (error) {
-    //     console.error('Error sending order to Clover:', error);
-    //     res.status(500).send('Failed to send order to Clover');
-    // }
 });
 
 app.listen(PORT, () => {
