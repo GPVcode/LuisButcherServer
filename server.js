@@ -55,7 +55,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     console.log("Line Items: ", lineItems);
     console.log("Total Price: ", totalPrice);
 
-    await axios.post('http://192.168.1.91:3000/print', {
+    await axios.post('http://10.0.0.3:3000/print', {
         orderId,
         customerName,
         lineItems,
@@ -63,6 +63,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     });
 
     res.status(200).send('Order received and print job sent');
+    console.log("Success");
     } catch (error) {
         console.error('Error processing Shopify order: ', error);
         res.status(500).send('Internal server error');
