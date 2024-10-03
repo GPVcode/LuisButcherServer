@@ -47,7 +47,8 @@ async function printOrder(orderDetails) {
         const itemLine = `${item.quantity} x ${item.name}`.padEnd(maxItemLength);
         const priceLine = ` - $${item.unitPrice}`;
         return `${itemLine}${priceLine}`;
-      }).join('\n')}      ------------------------------
+      }).join('\n')}      
+      ------------------------------
       Total: $${orderDetails.totalPrice}
     `;
 
