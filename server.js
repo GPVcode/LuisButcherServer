@@ -40,36 +40,40 @@ async function printOrder(orderDetails) {
       Order ID: ${orderDetails.orderId}
       Customer: ${orderDetails.customerName}
       ------------------------------
-      ${orderDetails.lineItems.map(item => `${item.quantity} x ${item.name} - $${item.unitPrice}`).join('\n')}
-      ------------------------------
+      ${orderDetails.lineItems.map(item => {
+        // Pad the item name to ensure alignment
+        const itemLine = `${item.quantity} x ${item.name}`.padEnd(maxItemLength);
+        const priceLine = ` - $${item.unitPrice}`;
+        return `${itemLine}${priceLine}`;
+      }).join('\n')}      ------------------------------
       Total: $${orderDetails.totalPrice}
     `;
 
     console.log("Printing content: ", printContent);
     console.log("Print order function confirmed");
 
-    try {
-      const response = await axios.post(
-        'https://api.printnode.com/printjobs',
-        {
-          printer: printerId,
-          title: `Order #${orderDetails.orderId}`,
-          contentType: 'raw_base64',
-          content: Buffer.from(printContent).toString('base64'),
-          source: 'Shopify Order Webhook',
-        },
-        {
-          auth: {
-            username: apiKey,
-            password: '', // No password needed, API key as username
-          },
-        }
-      );
+    // try {
+    //   const response = await axios.post(
+    //     'https://api.printnode.com/printjobs',
+    //     {
+    //       printer: printerId,
+    //       title: `Order #${orderDetails.orderId}`,
+    //       contentType: 'raw_base64',
+    //       content: Buffer.from(printContent).toString('base64'),
+    //       source: 'Shopify Order Webhook',
+    //     },
+    //     {
+    //       auth: {
+    //         username: apiKey,
+    //         password: '', // No password needed, API key as username
+    //       },
+    //     }
+    //   );
   
-      console.log('Print job created:', response.data);
-    } catch (error) {
-      console.error('Error sending print job:', error.response ? error.response.data : error.message);
-    }
+    //   console.log('Print job created:', response.data);
+    // } catch (error) {
+    //   console.error('Error sending print job:', error.response ? error.response.data : error.message);
+    // }
   }
 
 app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
