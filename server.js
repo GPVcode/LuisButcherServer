@@ -35,7 +35,7 @@ async function printOrder(orderDetails) {
     const apiKey = process.env.PRINTNODE_API_KEY;
     const printerId = process.env.PRINTER_ID;
 
-    const maxItemLength = 30; // Maximum width for item name
+    const indentation = '      '; // Indentation for each line
 
     // Create receipt content
     const printContent = `
@@ -44,39 +44,47 @@ async function printOrder(orderDetails) {
       ------------------------------
       ${orderDetails.lineItems.map(item => {
         // Pad the item name to ensure alignment
-        const itemLine = `${item.quantity} x ${item.name}`.padEnd(maxItemLength);
+        const itemLine = `${item.quantity} x ${item.name}`;
         const priceLine = ` - $${item.unitPrice}`;
-        return `${itemLine}${priceLine}`;
+        return `${indentation}${itemLine}${priceLine}`;
       }).join('\n')}      
       ------------------------------
+      Subtotal: ${indentation}$${orderDetails.subtotal}
+      Discount: ${indentation}-$${orderDetails.discount}
+      Shipping: ${indentation}$${orderDetails.shipping}
+      Taxes: ${indentation}$${orderDetails.tax}
+      ------------------------------
       Total: $${orderDetails.totalPrice}
+      ------------------------------
+      Payment Method: ${orderDetails.paymentMethod}
+      Paid: ${orderDetails.paid ? 'Yes' : 'No'}
     `;
 
     console.log("Printing content: ", printContent);
     console.log("Print order function confirmed");
 
-    // try {
-    //   const response = await axios.post(
-    //     'https://api.printnode.com/printjobs',
-    //     {
-    //       printer: printerId,
-    //       title: `Order #${orderDetails.orderId}`,
-    //       contentType: 'raw_base64',
-    //       content: Buffer.from(printContent).toString('base64'),
-    //       source: 'Shopify Order Webhook',
-    //     },
-    //     {
-    //       auth: {
-    //         username: apiKey,
-    //         password: '', // No password needed, API key as username
-    //       },
-    //     }
-    //   );
+    try {
+      const response = await axios.post(
+        'https://api.printnode.com/printjobs',
+        {
+          printer: printerId,
+          title: `Order #${orderDetails.orderId}`,
+          contentType: 'raw_base64',
+          content: Buffer.from(printContent).toString('base64'),
+          source: 'Shopify Order Webhook',
+        },
+        {
+          auth: {
+            username: apiKey,
+            password: '', // No password needed, API key as username
+          },
+        }
+      );
   
-    //   console.log('Print job created:', response.data);
-    // } catch (error) {
-    //   console.error('Error sending print job:', error.response ? error.response.data : error.message);
-    // }
+      console.log('Print job created:', response.data);
+    } catch (error) {
+      console.error('Error sending print job:', error.response ? error.response.data : error.message);
+    }
   }
 
 app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
@@ -95,10 +103,20 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
         quantity: item.quantity,
         unitPrice: item.price
     }));
-    const totalPrice = orderData.current_subtotal_price;
+    const subtotal = orderData.current_subtotal_price;
+    const discount = orderData.total_discounts || '0.00'; // Handle missing discount
+    const shipping = orderData.shipping_lines.length > 0 ? orderData.shipping_lines[0].price : '0.00';
+    const tax = orderData.total_tax || '0.00';
+    const totalPrice = orderData.total_price;
+    const paymentMethod = orderData.payment_gateway_names.join(', ');
+    const paid = orderData.financial_status === 'paid';
 
     // Send order details to PrintNode for printing
-    await printOrder({ orderId, customerName, lineItems, totalPrice });
+    await printOrder({ 
+        orderId, lineItems,
+        subtotal, discount, tax, totalPrice,
+        paymentMethod, paid 
+    });
 
     res.status(200).send('Order received and print job sent');
     console.log("Success");
