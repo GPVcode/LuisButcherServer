@@ -38,25 +38,13 @@ async function printOrder(orderDetails) {
 
     // Create receipt content
     const printContent = 
-    `Order ID: ${orderDetails.orderId}
-    Customer: ${orderDetails.customerName}
-    ------------------------------
-      ${orderDetails.lineItems.map(item => {
+    `Order ID: ${orderDetails.orderId}/nCustomer: ${orderDetails.customerName}/n------------------------------/n${orderDetails.lineItems.map(item => {
         // Pad the item name to ensure alignment
         const itemLine = `${item.quantity} x ${item.name}`;
         const priceLine = ` - $${item.unitPrice}`;
         return `${itemLine}${priceLine}`;
-      }).join('\n')}      
-      ------------------------------
-      Subtotal: $${orderDetails.subtotal}
-      Discount: -$${orderDetails.discount}
-      Shipping: $${orderDetails.shipping}
-      Taxes: $${orderDetails.tax}
-      ------------------------------
-      Total: $${orderDetails.totalPrice}
-      ------------------------------
-      Payment Method: ${orderDetails.paymentMethod}
-      Paid: ${orderDetails.paid ? 'Yes' : 'No'}
+      }).join('\n')}/n------------------------------/nSubtotal: $${orderDetails.subtotal}/nDiscount: -$${orderDetails.discount}/nTip: $${orderDetails.tipReceived}/nTaxes: $${orderDetails.tax}/n------------------------------/nTotal: $${orderDetails.totalPrice}/n------------------------------/nPayment Method: ${orderDetails.paymentMethod}/nPaid: ${orderDetails.paid ? 'Yes' : 'No'}
+    
     `;
 
     console.log("Printing content: ", printContent);
@@ -95,6 +83,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     // Extract necessary information from Shopify order data
     const orderId = orderData.id;
     const orderNumber = orderData.order_number;
+    const createdAt = new Date(orderData.created_at);
     const customerName = `${orderData.customer.first_name} ${orderData.customer.last_name}`;
     const customerEmail = orderData.customer.email;
     const lineItems = orderData.line_items.map(item => ({
@@ -102,6 +91,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
         quantity: item.quantity,
         unitPrice: item.price
     }));
+    const tipReceived = orderData.total_tip_received;
     const subtotal = orderData.current_subtotal_price;
     const discount = orderData.total_discounts || '0.00'; // Handle missing discount
      const tax = orderData.total_tax || '0.00';
@@ -111,8 +101,8 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
 
     // Send order details to PrintNode for printing
     await printOrder({ 
-        orderId, lineItems,
-        subtotal, discount, tax, totalPrice,
+        orderId, createdAt, lineItems,
+        subtotal, discount, tax, tipReceived, totalPrice,
         paymentMethod, paid 
     });
 
