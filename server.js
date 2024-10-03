@@ -37,10 +37,10 @@ async function printOrder(orderDetails) {
 
 
     // Create receipt content
-    const printContent = `
-      Order ID: ${orderDetails.orderId}
-      Customer: ${orderDetails.customerName}
-      ------------------------------
+    const printContent = 
+    `Order ID: ${orderDetails.orderId}
+    Customer: ${orderDetails.customerName}
+    ------------------------------
       ${orderDetails.lineItems.map(item => {
         // Pad the item name to ensure alignment
         const itemLine = `${item.quantity} x ${item.name}`;
