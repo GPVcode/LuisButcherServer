@@ -35,7 +35,6 @@ async function printOrder(orderDetails) {
     const apiKey = process.env.PRINTNODE_API_KEY;
     const printerId = process.env.PRINTER_ID;
 
-    const indentation = '      '; // Indentation for each line
 
     // Create receipt content
     const printContent = `
@@ -46,13 +45,13 @@ async function printOrder(orderDetails) {
         // Pad the item name to ensure alignment
         const itemLine = `${item.quantity} x ${item.name}`;
         const priceLine = ` - $${item.unitPrice}`;
-        return `${indentation}${itemLine}${priceLine}`;
+        return `${itemLine}${priceLine}`;
       }).join('\n')}      
       ------------------------------
-      Subtotal: ${indentation}$${orderDetails.subtotal}
-      Discount: ${indentation}-$${orderDetails.discount}
-      Shipping: ${indentation}$${orderDetails.shipping}
-      Taxes: ${indentation}$${orderDetails.tax}
+      Subtotal: $${orderDetails.subtotal}
+      Discount: -$${orderDetails.discount}
+      Shipping: $${orderDetails.shipping}
+      Taxes: $${orderDetails.tax}
       ------------------------------
       Total: $${orderDetails.totalPrice}
       ------------------------------
@@ -105,8 +104,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     }));
     const subtotal = orderData.current_subtotal_price;
     const discount = orderData.total_discounts || '0.00'; // Handle missing discount
-    const shipping = orderData.shipping_lines.length > 0 ? orderData.shipping_lines[0].price : '0.00';
-    const tax = orderData.total_tax || '0.00';
+     const tax = orderData.total_tax || '0.00';
     const totalPrice = orderData.total_price;
     const paymentMethod = orderData.payment_gateway_names.join(', ');
     const paid = orderData.financial_status === 'paid';
