@@ -90,7 +90,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     try{
     const orderData = req.body;
 
-    // console.log("Order Data: ", orderData);
+    console.log("Order Data: ", orderData);
 
     // Extract necessary information from Shopify order data
     const orderId = orderData.id;
