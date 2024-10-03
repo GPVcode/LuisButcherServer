@@ -35,6 +35,8 @@ async function printOrder(orderDetails) {
     const apiKey = process.env.PRINTNODE_API_KEY;
     const printerId = process.env.PRINTER_ID;
 
+    const maxItemLength = 30; // Maximum width for item name
+
     // Create receipt content
     const printContent = `
       Order ID: ${orderDetails.orderId}
