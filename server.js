@@ -38,12 +38,12 @@ async function printOrder(orderDetails) {
 
     // Create receipt content
     const printContent = 
-    `Order ID: ${orderDetails.orderId}/nCustomer: ${orderDetails.customerName}/n------------------------------/n${orderDetails.lineItems.map(item => {
+    `Order ID: ${orderDetails.orderId}\n------------------------------\n${orderDetails.lineItems.map(item => {
         // Pad the item name to ensure alignment
         const itemLine = `${item.quantity} x ${item.name}`;
         const priceLine = ` - $${item.unitPrice}`;
         return `${itemLine}${priceLine}`;
-      }).join('\n')}/n------------------------------/nSubtotal: $${orderDetails.subtotal}/nDiscount: -$${orderDetails.discount}/nTip: $${orderDetails.tipReceived}/nTaxes: $${orderDetails.tax}/n------------------------------/nTotal: $${orderDetails.totalPrice}/n------------------------------/nPayment Method: ${orderDetails.paymentMethod}/nPaid: ${orderDetails.paid ? 'Yes' : 'No'}
+      }).join('\n')}\n------------------------------\nSubtotal: $${orderDetails.subtotal}\nDiscount: -$${orderDetails.discount}\nTip: $${orderDetails.tipReceived}\nTaxes: $${orderDetails.tax}\n------------------------------\nTotal: $${orderDetails.totalPrice}\n------------------------------\nPayment Method: ${orderDetails.paymentMethod}\nPaid: ${orderDetails.paid ? 'Yes' : 'No'}\n\n\n\n\n
     
     `;
 
@@ -91,10 +91,10 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
         quantity: item.quantity,
         unitPrice: item.price
     }));
-    const tipReceived = orderData.total_tip_received;
-    const subtotal = orderData.current_subtotal_price;
+    const tipReceived = orderData.total_tip_received || '0.00';
     const discount = orderData.total_discounts || '0.00'; // Handle missing discount
-     const tax = orderData.total_tax || '0.00';
+    const tax = orderData.total_tax || '0.00';
+    const subtotal = orderData.current_subtotal_price;
     const totalPrice = orderData.total_price;
     const paymentMethod = orderData.payment_gateway_names.join(', ');
     const paid = orderData.financial_status === 'paid';
