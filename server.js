@@ -38,7 +38,7 @@ async function printOrder(orderDetails) {
 
     // Create receipt content
     const printContent = 
-    `Order ID: ${orderDetails.orderId}\n------------------------------\n${orderDetails.lineItems.map(item => {
+    `Order ID: ${orderDetails.orderId}\nOrder Received: ${orderDetails.orderData}\n------------------------------\n${orderDetails.lineItems.map(item => {
         // Pad the item name to ensure alignment
         const itemLine = `${item.quantity} x ${item.name}`;
         const priceLine = ` - $${item.unitPrice}`;
