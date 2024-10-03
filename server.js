@@ -47,7 +47,7 @@ async function printOrder(orderDetails) {
     
     `;
 
-    console.log("Printing content: ", printContent);
+    // console.log("Printing content:", printContent);
     console.log("Print order function confirmed");
 
     try {
