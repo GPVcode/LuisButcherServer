@@ -32,7 +32,6 @@ function verifyShopifyWebhook(req, res, next){
 // Function to send print job to PrintNode
 async function printOrder(orderDetails) {
 
-    console.log("Order Details: ", orderDetails);
     const apiKey = process.env.PRINTNODE_API_KEY;
     const printerId = process.env.PRINTER_ID;
 
@@ -49,34 +48,33 @@ async function printOrder(orderDetails) {
     console.log("Printing content: ", printContent);
     console.log("Print order function confirmed");
 
-    // try {
-    //   const response = await axios.post(
-    //     'https://api.printnode.com/printjobs',
-    //     {
-    //       printer: printerId,
-    //       title: `Order #${orderDetails.orderId}`,
-    //       contentType: 'raw_base64',
-    //       content: Buffer.from(printContent).toString('base64'),
-    //       source: 'Shopify Order Webhook',
-    //     },
-    //     {
-    //       auth: {
-    //         username: apiKey,
-    //         password: '', // No password needed, API key as username
-    //       },
-    //     }
-    //   );
+    try {
+      const response = await axios.post(
+        'https://api.printnode.com/printjobs',
+        {
+          printer: printerId,
+          title: `Order #${orderDetails.orderId}`,
+          contentType: 'raw_base64',
+          content: Buffer.from(printContent).toString('base64'),
+          source: 'Shopify Order Webhook',
+        },
+        {
+          auth: {
+            username: apiKey,
+            password: '', // No password needed, API key as username
+          },
+        }
+      );
   
-    //   console.log('Print job created:', response.data);
-    // } catch (error) {
-    //   console.error('Error sending print job:', error.response ? error.response.data : error.message);
-    // }
+      console.log('Print job created:', response.data);
+    } catch (error) {
+      console.error('Error sending print job:', error.response ? error.response.data : error.message);
+    }
   }
 
 app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     try{
     const orderData = req.body;
-    // console.log('Received order data from Shopify:', orderData); // Log the received order data
 
     // Extract necessary information from Shopify order data
     const orderId = orderData.id;
@@ -89,20 +87,6 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
         unitPrice: item.price
     }));
     const totalPrice = orderData.current_subtotal_price;
-
-    console.log("Order ID: ", orderId);
-    console.log("Order Number: ", orderNumber);
-    console.log("Customer Name: ", customerName);
-    console.log("Email: ", customerEmail);
-    console.log("Line Items: ", lineItems);
-    console.log("Total Price: ", totalPrice);
-
-    // await axios.post('http://10.0.0.3:3000/print', {
-    //     orderId,
-    //     customerName,
-    //     lineItems,
-    //     totalPrice
-    // });
 
     // Send order details to PrintNode for printing
     await printOrder({ orderId, customerName, lineItems, totalPrice });
