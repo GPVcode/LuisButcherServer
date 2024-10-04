@@ -38,7 +38,7 @@ async function printOrder(orderDetails) {
 
     // Create receipt content
     const printContent = 
-    `Order #: ${orderDetails.orderNumber}\nDate & Time: ${orderDetails.createdAt}\nCustomer: ${orderDetails.customerName}\n------------------------------\n${orderDetails.lineItems.map(item => {
+    `Order Number: #${orderDetails.orderNumber}\nOrder Received: ${orderDetails.createdAt}\nCustomer: ${orderDetails.customerName}\n------------------------------\n${orderDetails.lineItems.map(item => {
         // Pad the item name to ensure alignment
         const itemLine = `${item.quantity} x ${item.name}`;
         const priceLine = ` - $${item.unitPrice}`;
@@ -78,7 +78,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     try{
     const orderData = req.body;
 
-    // console.log("Order Data: ", orderData);
+    console.log("Order Data: ", orderData);
 
     // date for receipt
     const date = new Date(orderData.created_at);
