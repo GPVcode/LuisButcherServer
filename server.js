@@ -92,15 +92,10 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     });
 
     // Extract necessary information from Shopify order data
-    console.log("0");
     // const orderId = orderData.id;
-    console.log("1");
     const orderNumber = orderData.order_number;
-    console.log("2");
     const createdAt = formattedDate;
-    console.log("3");
-    const pickup = orderData.note_attributes[6].value || ngitull;
-    console.log("4");
+    const pickup = orderData.note_attributes[6].value || null;
     const customerName = `${orderData.customer.first_name} ${orderData.customer.last_name}`;
     const customerEmail = orderData.customer.email;
     const customerPhone = orderData.customer.phone ? orderData.customer.phone : null;
