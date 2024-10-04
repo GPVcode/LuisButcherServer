@@ -106,6 +106,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
         unitPrice: item.price
     }));
     const note = orderData.note || '';
+    console.log("444");
     const tipReceived = orderData.total_tip_received || '0.00';
     const discount = orderData.total_discounts || '0.00';
     const tax = orderData.total_tax || '0.00';
