@@ -96,14 +96,16 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     // Extract necessary information from Shopify order data
     console.log("0");
     const orderId = orderData.id;
-    const orderNumber = orderData.order_number;
-    const createdAt = formattedDate
-    const pickup = orderData.note_attributes[6].value;
     console.log("1");
+    const orderNumber = orderData.order_number;
+    console.log("2");
+    const createdAt = formattedDate;
+    console.log("3");
+    const pickup = orderData.note_attributes[6].value;
+    console.log("4");
     const customerName = `${orderData.customer.first_name} ${orderData.customer.last_name}`;
     const customerEmail = orderData.customer.email;
     const customerPhone = orderData.customer.phone ? orderData.customer.phone : null;
-    console.log("2");
 
     const lineItems = orderData.line_items.map(item => ({
         name: item.title,
@@ -111,7 +113,6 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
         unitPrice: item.price
     }));
     const note = orderData.note || '';
-    console.log("444");
     const tipReceived = orderData.total_tip_received || '0.00';
     const discount = orderData.total_discounts || '0.00';
     const tax = orderData.total_tax || '0.00';
