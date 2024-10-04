@@ -38,7 +38,7 @@ async function printOrder(orderDetails) {
 
     // Create receipt content
     const printContent = 
-    `Online Order Placed\nOrder #: ${orderDetails.orderId}\nDate & Time: ${orderDetails.createdAt}\nCustomer: ${orderDetails.customerName}\n------------------------------\n${orderDetails.lineItems.map(item => {
+    `Order #: ${orderDetails.orderNumber}\nDate & Time: ${orderDetails.createdAt}\nCustomer: ${orderDetails.customerName}\n------------------------------\n${orderDetails.lineItems.map(item => {
         // Pad the item name to ensure alignment
         const itemLine = `${item.quantity} x ${item.name}`;
         const priceLine = ` - $${item.unitPrice}`;
@@ -80,10 +80,21 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
 
     // console.log("Order Data: ", orderData);
 
+    // date for receipt
+    const date = new Date(orderData.created_at);
+    const formattedDate = date.toLocaleString('en-US', {
+      month: 'long',   // Full month name
+      day: 'numeric',  // Day of the month
+      year: 'numeric', // Year
+      hour: 'numeric', // Hour
+      minute: 'numeric', // Minutes
+      hour12: true     // 12-hour format (AM/PM)
+    });
+
     // Extract necessary information from Shopify order data
     const orderId = orderData.id;
     const orderNumber = orderData.order_number;
-    const createdAt = new Date(orderData.created_at);
+    const createdAt = formattedDate
     const customerName = `${orderData.customer.first_name} ${orderData.customer.last_name}`;
     const customerEmail = orderData.customer.email;
     const lineItems = orderData.line_items.map(item => ({
@@ -102,7 +113,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
 
     // Send order details to PrintNode for printing
     await printOrder({ 
-        orderId, customerName, createdAt, lineItems, note,
+        orderNumber, customerName, createdAt, lineItems, note,
         subtotal, discount, tax, tipReceived, totalPrice,
         paymentMethod, paid 
     });
