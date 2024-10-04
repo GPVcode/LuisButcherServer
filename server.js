@@ -79,9 +79,10 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     const orderData = req.body;
 
     console.log("Order Data: ", orderData);
-
+    console.log("DARTS")
     // date for receipt
     const date = new Date(orderData.created_at);
+    console.log("HERE???")
     const formattedDate = date.toLocaleString('en-US', {
       month: 'long',   // Full month name
       day: 'numeric',  // Day of the month
@@ -93,6 +94,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     });
 
     // Extract necessary information from Shopify order data
+    console.log("0");
     const orderId = orderData.id;
     const orderNumber = orderData.order_number;
     const createdAt = formattedDate
