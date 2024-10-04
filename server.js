@@ -95,10 +95,10 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     // const orderId = orderData.id;
     const orderNumber = orderData.order_number;
     const createdAt = formattedDate;
-    const pickup = orderData.note_attributes[6].value || null;
+    const pickup = orderData.note_attributes[6].value ? orderData.note_attributes[6].value : '';
     const customerName = `${orderData.customer.first_name} ${orderData.customer.last_name}`;
     const customerEmail = orderData.customer.email;
-    const customerPhone = orderData.customer.phone ? orderData.customer.phone : null;
+    const customerPhone = orderData.customer.phone ? orderData.customer.phone : '';
 
     const lineItems = orderData.line_items.map(item => ({
         name: item.title,
