@@ -38,7 +38,7 @@ async function printOrder(orderDetails) {
 
     // Create receipt content
     const printContent = 
-    `Order Number: #${orderDetails.orderNumber}\nOrder Received: ${orderDetails.createdAt}\nPick up: ${orderDetails.pickup}\nCustomer: ${orderDetails.customerName}\n------------------------------\n${orderDetails.lineItems.map(item => {
+    `Order Number: #${orderDetails.orderNumber}\nOrder Received: ${orderDetails.createdAt}\nPick up: ${orderDetails.pickup}\nCustomer: ${orderDetails.customerName}\nPhone: ${orderDetails.customerPhone}\n------------------------------\n${orderDetails.lineItems.map(item => {
         // Pad the item name to ensure alignment
         const itemLine = `${item.quantity} x ${item.name}`;
         const priceLine = ` - $${item.unitPrice}`;
@@ -99,14 +99,15 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     const pickup = orderData.note_attributes[6].value;
     const customerName = `${orderData.customer.first_name} ${orderData.customer.last_name}`;
     const customerEmail = orderData.customer.email;
+    const customerPhone = orderData.customer.phone ? orderData.customer.phone : null;
     const lineItems = orderData.line_items.map(item => ({
         name: item.title,
         quantity: item.quantity,
         unitPrice: item.price
     }));
-    const note = orderData.note;
+    const note = orderData.note || '';
     const tipReceived = orderData.total_tip_received || '0.00';
-    const discount = orderData.total_discounts || '0.00'; // Handle missing discount
+    const discount = orderData.total_discounts || '0.00';
     const tax = orderData.total_tax || '0.00';
     const subtotal = orderData.current_subtotal_price;
     const totalPrice = orderData.total_price;
@@ -115,7 +116,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
 
     // Send order details to PrintNode for printing
     await printOrder({ 
-        orderNumber, customerName, createdAt, pickup, lineItems, note,
+        orderNumber, customerName, customerPhone, createdAt, pickup, lineItems, note,
         subtotal, discount, tax, tipReceived, totalPrice,
         paymentMethod, paid 
     });
