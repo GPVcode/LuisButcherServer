@@ -218,7 +218,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
 
     console.log("Examine Data!: " , orderData.line_items.map(item => ({
       name: item.title,
-      properties: JSON.parse(item.properties, null, 2)
+      properties: JSON.stringify(item.properties, null, 2)
     })));
 
     console.log("Order Data: ", orderData);
