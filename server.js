@@ -43,7 +43,7 @@ async function printOrder(orderDetails) {
         const itemLine = `${item.quantity} x ${item.name}`;
         const priceLine = ` - $${item.unitPrice}`;
         return `${itemLine}${priceLine}`;
-      }).join('\n')}\n------------------------------\nNote: ${orderDetails.note}\nSubtotal: $${orderDetails.subtotal}\nDiscount: -$${orderDetails.discount}\nTip: $${orderDetails.tipReceived}\nTaxes: $${orderDetails.tax}\n------------------------------\nTotal: $${orderDetails.totalPrice}\n------------------------------\nPayment Method: ${orderDetails.paymentMethod}\nPaid: ${orderDetails.paid ? 'Yes' : 'No'}\n\n\n\n\n
+      }).join('\n')}\n------------------------------\nNote: ${orderDetails.note}\nSubtotal: $${orderDetails.subtotal}\nDiscount: -$${orderDetails.discount}\nTip: $${orderDetails.tipReceived}\nTaxes: $${orderDetails.tax}\n------------------------------\nTotal: $${orderDetails.totalPrice}\n------------------------------\nPayment Method: ${orderDetails.paymentMethod}\nPaid: ${orderDetails.paid ? 'Yes' : 'No'}\n\n\n
     
     `;
 
@@ -77,6 +77,11 @@ async function printOrder(orderDetails) {
 app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     try{
     const orderData = req.body;
+
+    console.log("Examine Data!: " , orderData.line_items.map(item => ({
+      name: item.title,
+      properties: JSON.stringify(item.properties, null, 2)
+    })));
 
     console.log("Order Data: ", orderData);
     // date for receipt
