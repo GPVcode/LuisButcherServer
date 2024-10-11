@@ -38,7 +38,7 @@ async function printOrder(orderDetails) {
 
     // Create receipt content
     const printContent = 
-    `Order Number: #${orderDetails.orderNumber}\nOrder Received: ${orderDetails.createdAt}\nPick up: ${orderDetails.pickup}\nCustomer: ${orderDetails.customerName}\nPhone: ${orderDetails.customerPhone}\n------------------------------\n${orderDetails.lineItems.map(item => {
+    `Order Number: #${orderDetails.orderNumber}\nOrder Received: ${orderDetails.createdAt}\nPick Up Day: ${orderDetails.pickupDay}\nPick Up Time: ${orderDetails.pickupTime}\nCustomer: ${orderDetails.customerName}\nPhone: ${orderDetails.customerPhone}\n------------------------------\n${orderDetails.lineItems.map(item => {
         // Pad the item name to ensure alignment
         const itemLine = `${item.quantity} x ${item.name}`;
         const priceLine = ` - $${item.unitPrice}`;
@@ -82,7 +82,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     // date for receipt
     const date = new Date(orderData.created_at);
     const formattedDate = date.toLocaleString('en-US', {
-      month: 'long',   // Full month name
+      month: 'numeric',   // Full month name
       day: 'numeric',  // Day of the month
       year: 'numeric', // Year
       hour: 'numeric', // Hour
@@ -95,7 +95,8 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     // const orderId = orderData.id;
     const orderNumber = orderData.order_number;
     const createdAt = formattedDate;
-    const pickup = (orderData.note_attributes[6] && orderData.note_attributes[6].value !== undefined ) ? orderData.note_attributes[6].value : '';
+    const pickupTime = (orderData.note_attributes[6] && orderData.note_attributes[6].value !== undefined ) ? orderData.note_attributes[6].value : '';
+    const pickupDay = (orderData.note_attributes[1] && orderData.note_attributes[1].value !== undefined ) ? orderData.note_attributes[1].value : '';
     const customerName = `${orderData.customer.first_name} ${orderData.customer.last_name}`;
     const customerEmail = orderData.customer.email;
     const customerPhone = orderData.customer.phone ? orderData.customer.phone : '';
@@ -116,7 +117,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
 
     // Send order details to PrintNode for printing
     await printOrder({ 
-        orderNumber, customerName, customerPhone, createdAt, pickup, lineItems, note,
+        orderNumber, customerName, customerPhone, createdAt, pickupDay, pickupTime, lineItems, note,
         subtotal, discount, tax, tipReceived, totalPrice,
         paymentMethod, paid 
     });
