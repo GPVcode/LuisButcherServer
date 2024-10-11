@@ -8,6 +8,144 @@ const app = express();
 dotenv.config();
 const PORT = process.env.PORT || 3000;
 
+// const data = [
+//   {
+//     name: '#1 Natural Juice 16oz',
+//     properties: '[\n' +
+//       '  {\n' +
+//       '    "name": "_tpo_main_product_id",\n' +
+//       '    "value": "48780060688671"\n' +
+//       '  },\n' +
+//       '  {\n' +
+//       '    "name": "_tpo_add_on_key",\n' +
+//       '    "value": "ff090bcf-30ab-42fc-b557-f64847a5c7d1"\n' +
+//       '  }\n' +
+//       ']'
+//   },
+//   {
+//     name: 'Extra Guacamole',
+//     properties: '[\n' +
+//       '  {\n' +
+//       '    "name": "_tpo_main_product_id",\n' +
+//       '    "value": "48780060688671"\n' +
+//       '  },\n' +
+//       '  {\n' +
+//       '    "name": "_tpo_add_on_key",\n' +
+//       '    "value": "c2851812-895d-4796-bfe6-0707d2437dba"\n' +
+//       '  }\n' +
+//       ']'
+//   },
+//   {
+//     name: 'Green Salsa',
+//     properties: '[\n' +
+//       '  {\n' +
+//       '    "name": "_tpo_main_product_id",\n' +
+//       '    "value": "48780060688671"\n' +
+//       '  },\n' +
+//       '  {\n' +
+//       '    "name": "_tpo_add_on_key",\n' +
+//       '    "value": "b9b29955-8325-49fc-bcd6-f91cdea58cd2"\n' +
+//       '  }\n' +
+//       ']'
+//   },
+//   {
+//     name: 'Brisket',
+//     properties: '[\n' +
+//       '  {\n' +
+//       '    "name": "_tpo_main_product_id",\n' +
+//       '    "value": "48780060688671"\n' +
+//       '  },\n' +
+//       '  {\n' +
+//       '    "name": "_tpo_add_on_key",\n' +
+//       '    "value": "3a60c642-3a4d-4df7-9d07-1c9e39321dfe"\n' +
+//       '  }\n' +
+//       ']'
+//   },
+//   {
+//     name: 'Breakast Burrito',
+//     properties: '[\n' +
+//       '  {\n' +
+//       '    "name": "_tpo_add_on_keys",\n' +
+//       '    "value": "[\\"3a60c642-3a4d-4df7-9d07-1c9e39321dfe\\",\\"b9b29955-8325-49fc-bcd6-f91cdea58cd2\\",\\"c2851812-895d-4796-bfe6-0707d2437dba\\",\\"ff090bcf-30ab-42fc-b557-f64847a5c7d1\\"]"\n' +
+//       '  },\n' +
+//       '  {\n' +
+//       '    "name": "_tpo_add_on_variant_ids",\n' +
+//       '    "value": "[\\"49087357681951\\",\\"49085860380959\\",\\"49085834821919\\",\\"48839638352159\\"]"\n' +
+//       '  },\n' +
+//       '  {\n' +
+//       '    "name": "Meat Options",\n' +
+//       '    "value": "Upgrade to Brisket ( +$3.49 )"\n' +
+//       '  },\n' +
+//       '  {\n' +
+//       '    "name": "Salsa",\n' +
+//       '    "value": "Green Salsa (mild)"\n' +
+//       '  },\n' +
+//       '  {\n' +
+//       '    "name": "Extra Toppings",\n' +
+//       '    "value": "Guacamole ( +$2.00 )"\n' +
+//       '  },\n' +
+//       '  {\n' +
+//       '    "name": "Drinks:",\n' +
+//       '    "value": "#1 Natural Juice 16oz ( +$6.49 )"\n' +
+//       '  },\n' +
+//       '  {\n' +
+//       '    "name": "_tpo_is_main_product",\n' +
+//       '    "value": "1"\n' +
+//       '  }\n' +
+//       ']'
+//   },
+//   { name: 'Tip', properties: '[]' }
+// ]
+
+// // orderDetails -> line_items -> loop through properties for each product -> look for '_tpo_is_main_product' -> create print of add-ons within this main product
+
+// // loop through line items X
+//   // get order data.line_items
+//   // loop through line_items array.
+// // in each line_item index, loop thorugh products properties
+// // confirm main product
+// // create print
+// // continue looping through line items
+
+// // send line items data in our print middlewate
+// const lineItems = orderData.line_items; // SOURCE FROMS HOPIFY WEBHOOK. Arrives to printer middelware as inside 'orderDetails' object package.
+
+// // now we are in Printer function
+// const orderLineItems = orderDetails.lineItems;
+// // loop through line items and loop through properties
+// const loopThroughItems = (orderLineItems) => {
+//   // what do we do when we find the main product?
+//   // loop through ine items,
+//   for(let i = 0; i < orderLineItems.length; i++){
+//     // confirm main product with a boolean function
+//     if(isMainProduct(orderLineItems[i])){
+
+//     }
+
+//   }
+// };
+
+
+// // looping through product's properties to find '_tpo_is_main_product'
+// const isMainProduct = (product) => {
+//   for(let i = 0; i < product.length; i++){
+//     if(product[i].properties === '_tpo_is_main_product')
+//   }
+// };
+
+// ${orderDetails.lineItems.map(item => {
+//   // through each item, 
+//   // Pad the item name to ensure alignment
+//   const itemLine = `${item.quantity} x ${item.name}`;
+//   const priceLine = ` - $${item.unitPrice}`;
+//   return `${itemLine}${priceLine}`;
+// }).join('\n')}
+
+
+
+
+// console.log("TEST: ", test(data))
+
 
 // Middleware to capture the raw body before JSON parsing
 app.use(express.json({
@@ -80,7 +218,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
 
     console.log("Examine Data!: " , orderData.line_items.map(item => ({
       name: item.title,
-      properties: JSON.stringify(item.properties, null, 2)
+      properties: JSON.parse(item.properties, null, 2)
     })));
 
     console.log("Order Data: ", orderData);
@@ -139,3 +277,5 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on Port ${PORT}`);
 })
+
+
