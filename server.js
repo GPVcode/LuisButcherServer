@@ -272,7 +272,9 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     const lineItems = orderData.line_items.reduce((result, item) => {
         // Parse properties data
         console.log("1")
-        const properties = JSON.parse(item.properties);
+        // const properties = JSON.parse(item.properties);
+        const properties = item.properties;
+
         // check if at leas one element passes given test (returns true)
         const isMainProduct = properties.some(prop => prop.name === '_tpo_is_main_product' && prop.value === '1');
 
