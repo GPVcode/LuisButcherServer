@@ -299,11 +299,12 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
           orderData.line_items.forEach(addOnItem => {
             // const addOnProperties = JSON.parse(addOnItem.properties);
             const addOnProperties = addOnItem.properties;
-            const mainProductId = addOnProperties.find(prop => prop.name === '_tpo_main_product_id')?.value;
+
+            const addOnKey = addOnProperties.find(prop => prop.name === '_tpo_add_on_key')?.value;
             console.log("ADDON: ", addOnProperties);
             // If the add-on belongs to the current main product, add it under the main product
-            if (parsedAddOnKeys.includes(mainProductId)) {
-
+            if (parsedAddOnKeys.includes(addOnKey)) {
+              console.log("touch");
               mainProduct.addOns.push({
                 name: addOnItem.title,
                 quantity: addOnItem.quantity,
