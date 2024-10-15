@@ -273,16 +273,11 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
 
     const lineItems = orderData.line_items.reduce((result, item) => {
         // Parse properties data
-        console.log("1")
         // const properties = JSON.parse(item.properties);
         const properties = item.properties;
-        console.log("2")
-
 
         // check if at leas one element passes given test (returns true)
         const isMainProduct = properties.some(prop => prop.name === '_tpo_is_main_product' && prop.value === '1');
-        console.log("3")
-        console.log("MAIN PROD? ", isMainProduct);
 
         // if main product, add to print result
         if(isMainProduct){
@@ -294,16 +289,20 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
           }
 
           // Store add-on keys belonging to main product
-          const addOnKeys = properties.find(prop => prop.name === '_tpo_add_on_key')?.value || '[]'; // ensure no error is thrown
+          const addOnKeys = properties.find(prop => prop.name === '_tpo_add_on_keys')?.value || '[]'; // ensure no error is thrown
           console.log("5")
-          console.log("item props: ", item.properties);
 
-
-          // const parsedAddOnKeys = JSON.parse(addOnKeys);
           console.log("6")
 
-          result.push(mainProduct);
-
+          item.forEach(mainProductItem => {
+            if(mainProductItem.name.charAt(0) !== "_"){
+              mainProduct.addOns.push({
+                name: mainProductItem.name,
+                value: mainProductItem.value
+              })
+            }
+          })
+          
           orderData.line_items.forEach(addOnItem => {
             // const addOnProperties = JSON.parse(addOnItem.properties);
             const addOnProperties = addOnItem.properties;
@@ -311,14 +310,16 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
             const mainProductId = addOnProperties.find(prop => prop.name === '_tpo_main_product_id')?.value;
 
             // If the add-on belongs to the current main product, add it under the main product
-            if (addOnKeys.includes(mainProductId)) {
-              mainProduct.addOns.push({
-                name: addOnItem.title,
-                quantity: addOnItem.quantity,
-                unitPrice: addOnItem.price
-              });
-            }
+            // if (addOnKeys.includes(mainProductId)) {
+            //   mainProduct.addOns.push({
+            //     name: addOnItem.title,
+            //     quantity: addOnItem.quantity,
+            //     unitPrice: addOnItem.price
+            //   });
+            // }
           });
+
+          result.push(mainProduct);
         }
 
         return result;
