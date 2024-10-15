@@ -178,12 +178,13 @@ async function printOrder(orderDetails) {
 
     // Create receipt content
     const printContent = `
-    Order Number: #${orderDetails.orderNumber}\n
-    Order Received: ${orderDetails.createdAt}\n
-    Pick Up Day: ${orderDetails.pickupDay}\n
-    Pick Up Time: ${orderDetails.pickupTime}\n
-    Customer: ${orderDetails.customerName}\n
-    Phone: ${orderDetails.customerPhone}\n
+    Order Number: #${orderDetails.orderNumber}
+    Paid: ${orderDetails.paid ? 'Yes' : 'No'}
+    Received: ${orderDetails.createdAt}
+    Pick Up Day: ${orderDetails.pickupDay}
+    Pick Up Time: ${orderDetails.pickupTime}
+    Customer: ${orderDetails.customerName}
+    Phone: ${orderDetails.customerPhone}
     ------------------------------\n
     ${orderDetails.lineItems.map(item => {
         // Pad the item name to ensure alignment
@@ -191,25 +192,24 @@ async function printOrder(orderDetails) {
 
         // Print each add-on indented under the main product
         const addOnLines = item.addOns.map(addOn => {
-          return `   ↳ ${addOn.quantity} x ${addOn.name} - $${addOn.unitPrice}\n`;
+          return `   - ${addOn.quantity} x ${addOn.name} - $${addOn.unitPrice}\n`;
         }).join('');
 
         return itemLine + addOnLines;
         // const priceLine = ` - $${item.unitPrice}`;
 
         // return `${itemLine}${priceLine}`;
-    }).join('')}\n
+    }).join('')}
     ------------------------------\n
-    Note: ${orderDetails.note}\n
-    Subtotal: $${orderDetails.subtotal}\n
-    Discount: -$${orderDetails.discount}\n
-    Tip: $${orderDetails.tipReceived}\n
-    Taxes: $${orderDetails.tax}\n
+    Note: ${orderDetails.note}
+    Subtotal: $${orderDetails.subtotal}
+    Discount: -$${orderDetails.discount}
+    Tip: $${orderDetails.tipReceived}
+    Taxes: $${orderDetails.tax}
     ------------------------------\n
     Total: $${orderDetails.totalPrice}\n
     ------------------------------\n
-    Payment Method: ${orderDetails.paymentMethod}\n
-    Paid: ${orderDetails.paid ? 'Yes' : 'No'}\n\n\n
+    Payment Method: ${orderDetails.paymentMethod}\n\n\n
     `;
 
     console.log("Printing content:", printContent);
