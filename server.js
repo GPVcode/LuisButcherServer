@@ -175,14 +175,39 @@ async function printOrder(orderDetails) {
 
 
     // Create receipt content
-    const printContent = 
-    `Order Number: #${orderDetails.orderNumber}\nOrder Received: ${orderDetails.createdAt}\nPick Up Day: ${orderDetails.pickupDay}\nPick Up Time: ${orderDetails.pickupTime}\nCustomer: ${orderDetails.customerName}\nPhone: ${orderDetails.customerPhone}\n------------------------------\n${orderDetails.lineItems.map(item => {
+    const printContent = `
+    Order Number: #${orderDetails.orderNumber}\n
+    Order Received: ${orderDetails.createdAt}\n
+    Pick Up Day: ${orderDetails.pickupDay}\n
+    Pick Up Time: ${orderDetails.pickupTime}\n
+    Customer: ${orderDetails.customerName}\n
+    Phone: ${orderDetails.customerPhone}\n
+    ------------------------------\n
+    ${orderDetails.lineItems.map(item => {
         // Pad the item name to ensure alignment
-        const itemLine = `${item.quantity} x ${item.name}`;
-        const priceLine = ` - $${item.unitPrice}`;
-        return `${itemLine}${priceLine}`;
-      }).join('\n')}\n------------------------------\nNote: ${orderDetails.note}\nSubtotal: $${orderDetails.subtotal}\nDiscount: -$${orderDetails.discount}\nTip: $${orderDetails.tipReceived}\nTaxes: $${orderDetails.tax}\n------------------------------\nTotal: $${orderDetails.totalPrice}\n------------------------------\nPayment Method: ${orderDetails.paymentMethod}\nPaid: ${orderDetails.paid ? 'Yes' : 'No'}\n\n\n
-    
+        const itemLine = `${item.quantity} x ${item.name} - $${item.unitPrice}\n`;
+
+        // Print each add-on indented under the main product
+        const addOnLines = item.addOns.map(addOn => {
+          return `   ↳ ${addOn.quantity} x ${addOn.name} - $${addOn.unitPrice}\n`;
+        }).join('');
+
+        return itemLine + addOnLines;
+        // const priceLine = ` - $${item.unitPrice}`;
+
+        // return `${itemLine}${priceLine}`;
+      }).join('')}
+      \n------------------------------\n
+      Note: ${orderDetails.note}\n
+      Subtotal: $${orderDetails.subtotal}\n
+      Discount: -$${orderDetails.discount}\n
+      Tip: $${orderDetails.tipReceived}\n
+      Taxes: $${orderDetails.tax}\n
+      ------------------------------\n
+      Total: $${orderDetails.totalPrice}\n
+      ------------------------------\n
+      Payment Method: ${orderDetails.paymentMethod}\n
+      Paid: ${orderDetails.paid ? 'Yes' : 'No'}\n\n\n
     `;
 
     console.log("Printing content:", printContent);
@@ -244,11 +269,47 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     const customerEmail = orderData.customer.email;
     const customerPhone = orderData.customer.phone ? orderData.customer.phone : '';
 
-    const lineItems = orderData.line_items.map(item => ({
-        name: item.title,
-        quantity: item.quantity,
-        unitPrice: item.price
-    }));
+    const lineItems = orderData.line_items.reduce((result, item) => {
+        // Parse properties data
+        const properties = JSON.parse(item.properties);
+        // check if at leas one element passes given test (returns true)
+        const isMainProduct = properties.some(prop => prop.name === '_tpo_is_main_product' && prop.value === '1');
+
+        // if main product, add to print result
+        if(isMainProduct){
+          const mainProduct = {
+            name: item.title,
+            quantity: item.quantity,
+            unitPrice: item.price,
+            addOns: [] // To store any add-ons that belong to this main product
+          }
+
+          // Store add-on keys belonging to main product
+          const addOnKeys = properties.find(prop => prop.name === '_tpo_add_on_keys')?.value || '[]'; // ensure no error is thrown
+          const parsedAddOnKeys = JSON.parse(addOnKeys);
+
+          result.push(mainProduct);
+
+          orderData.line_items.forEach(addOnItem => {
+            const addOnProperties = JSON.parse(addOnItem.properties);
+            const mainProductId = addOnProperties.find(prop => prop.name === '_tpo_main_product_id')?.value;
+
+            // If the add-on belongs to the current main product, add it under the main product
+            if (parsedAddOnKeys.includes(mainProductId)) {
+              mainProduct.addOns.push({
+                name: addOnItem.title,
+                quantity: addOnItem.quantity,
+                unitPrice: addOnItem.price
+              });
+            }
+          });
+        }
+
+        console.log("WHat are the line Items?: ", lineItems);
+
+        return result;
+      }, []);
+      
     const note = orderData.note || '';
     const tipReceived = orderData.total_tip_received || '0.00';
     const discount = orderData.total_discounts || '0.00';
