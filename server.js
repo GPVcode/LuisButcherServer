@@ -179,8 +179,7 @@ async function printOrder(orderDetails) {
     // Create receipt content
     const printContent = `
     Order Number: #${orderDetails.orderNumber}
-    Paid: ${orderDetails.paid ? 'Yes' : 'No'}
-    Received: ${orderDetails.createdAt}
+    Order Received: ${orderDetails.createdAt}
     Pick Up Day: ${orderDetails.pickupDay}
     Pick Up Time: ${orderDetails.pickupTime}
     Customer: ${orderDetails.customerName}
@@ -192,15 +191,15 @@ async function printOrder(orderDetails) {
 
         // Print each add-on indented under the main product
         const addOnLines = item.addOns.map(addOn => {
-          return `   - ${addOn.quantity} x ${addOn.name} - $${addOn.unitPrice}\n`;
+          return `   + ${addOn.quantity} x ${addOn.name} - $${addOn.unitPrice}\n`;
         }).join('');
 
         return itemLine + addOnLines;
         // const priceLine = ` - $${item.unitPrice}`;
 
         // return `${itemLine}${priceLine}`;
-    }).join('')}
-    ------------------------------\n
+    }).join('')}\n
+    ------------------------------
     Note: ${orderDetails.note}
     Subtotal: $${orderDetails.subtotal}
     Discount: -$${orderDetails.discount}
@@ -209,7 +208,8 @@ async function printOrder(orderDetails) {
     ------------------------------\n
     Total: $${orderDetails.totalPrice}\n
     ------------------------------\n
-    Payment Method: ${orderDetails.paymentMethod}\n\n\n
+    Payment Method: ${orderDetails.paymentMethod}
+    Paid: ${orderDetails.paid ? 'Yes' : 'No'}\n\n\n
     `;
 
     console.log("Printing content:", printContent);
