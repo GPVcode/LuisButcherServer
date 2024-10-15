@@ -289,37 +289,27 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
           }
 
           // Store add-on keys belonging to main product
-          const addOnKeys = properties.find(prop => prop.name === '_tpo_add_on_keys')?.value || '[]'; // ensure no error is thrown
+          const addOnKeys = properties.find(prop => prop.name === '_tpo_add_on_keys')?.value || '[]'; // JSON string of add-on keys. Ensure no error is thrown
           console.log("5")
+          const parsedAddOnKeys = JSON.parse(addOnKeys);
 
           console.log("6")
           console.log('itemmm: ', item.properties)
 
-
-          Object.entries(item).forEach(([key, value]) => {
-
-            if(key.charAt(0) !== "_"){
-              mainProduct.addOns.push({
-                name: key,
-                value: value
-              });
-            }
-          });
-
           orderData.line_items.forEach(addOnItem => {
             // const addOnProperties = JSON.parse(addOnItem.properties);
             const addOnProperties = addOnItem.properties;
-
             const mainProductId = addOnProperties.find(prop => prop.name === '_tpo_main_product_id')?.value;
-
+            console.log("ADDON: ", addOnProperties);
             // If the add-on belongs to the current main product, add it under the main product
-            // if (addOnKeys.includes(mainProductId)) {
-            //   mainProduct.addOns.push({
-            //     name: addOnItem.title,
-            //     quantity: addOnItem.quantity,
-            //     unitPrice: addOnItem.price
-            //   });
-            // }
+            if (parsedAddOnKeys.includes(mainProductId)) {
+
+              mainProduct.addOns.push({
+                name: addOnItem.title,
+                quantity: addOnItem.quantity,
+                unitPrice: addOnItem.price
+              });
+            }
           });
 
           result.push(mainProduct);
