@@ -173,6 +173,8 @@ async function printOrder(orderDetails) {
     const apiKey = process.env.PRINTNODE_API_KEY;
     const printerId = process.env.PRINTER_ID;
 
+    console.log("Line ")
+
 
     // Create receipt content
     const printContent = `
@@ -196,18 +198,18 @@ async function printOrder(orderDetails) {
         // const priceLine = ` - $${item.unitPrice}`;
 
         // return `${itemLine}${priceLine}`;
-      }).join('')}
-      \n------------------------------\n
-      Note: ${orderDetails.note}\n
-      Subtotal: $${orderDetails.subtotal}\n
-      Discount: -$${orderDetails.discount}\n
-      Tip: $${orderDetails.tipReceived}\n
-      Taxes: $${orderDetails.tax}\n
-      ------------------------------\n
-      Total: $${orderDetails.totalPrice}\n
-      ------------------------------\n
-      Payment Method: ${orderDetails.paymentMethod}\n
-      Paid: ${orderDetails.paid ? 'Yes' : 'No'}\n\n\n
+    }).join('')}\n
+    ------------------------------\n
+    Note: ${orderDetails.note}\n
+    Subtotal: $${orderDetails.subtotal}\n
+    Discount: -$${orderDetails.discount}\n
+    Tip: $${orderDetails.tipReceived}\n
+    Taxes: $${orderDetails.tax}\n
+    ------------------------------\n
+    Total: $${orderDetails.totalPrice}\n
+    ------------------------------\n
+    Payment Method: ${orderDetails.paymentMethod}\n
+    Paid: ${orderDetails.paid ? 'Yes' : 'No'}\n\n\n
     `;
 
     console.log("Printing content:", printContent);
@@ -276,6 +278,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
         const properties = item.properties;
         console.log("2")
 
+
         // check if at leas one element passes given test (returns true)
         const isMainProduct = properties.some(prop => prop.name === '_tpo_is_main_product' && prop.value === '1');
         console.log("3")
@@ -289,11 +292,13 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
             unitPrice: item.price,
             addOns: [] // To store any add-ons that belong to this main product
           }
-          console.log("4")
+=
+          console.log 
 
           // Store add-on keys belonging to main product
-          const addOnKeys = properties.find(prop => prop.name === '_tpo_add_on_keys')?.value || '[]'; // ensure no error is thrown
+          const addOnKeys = properties.find(prop => prop.name === '_tpo_add_on_key')?.value || '[]'; // ensure no error is thrown
           console.log("5")
+
 
           // const parsedAddOnKeys = JSON.parse(addOnKeys);
           console.log("6")
