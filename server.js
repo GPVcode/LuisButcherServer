@@ -291,7 +291,9 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
           result.push(mainProduct);
 
           orderData.line_items.forEach(addOnItem => {
-            const addOnProperties = JSON.parse(addOnItem.properties);
+            // const addOnProperties = JSON.parse(addOnItem.properties);
+            const addOnProperties = addOnItem.properties;
+
             const mainProductId = addOnProperties.find(prop => prop.name === '_tpo_main_product_id')?.value;
 
             // If the add-on belongs to the current main product, add it under the main product
