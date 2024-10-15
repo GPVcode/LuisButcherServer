@@ -292,12 +292,11 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
             unitPrice: item.price,
             addOns: [] // To store any add-ons that belong to this main product
           }
-=
-          console.log 
 
           // Store add-on keys belonging to main product
           const addOnKeys = properties.find(prop => prop.name === '_tpo_add_on_key')?.value || '[]'; // ensure no error is thrown
           console.log("5")
+          console.log("item props: ", item.properties);
 
 
           // const parsedAddOnKeys = JSON.parse(addOnKeys);
