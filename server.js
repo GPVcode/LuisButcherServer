@@ -279,6 +279,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
         // check if at leas one element passes given test (returns true)
         const isMainProduct = properties.some(prop => prop.name === '_tpo_is_main_product' && prop.value === '1');
         console.log("3")
+        console.log("MAIN PROD? ", isMainProduct);
 
         // if main product, add to print result
         if(isMainProduct){
@@ -316,10 +317,10 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
           });
         }
 
-        console.log("WHat are the line Items?: ", lineItems);
-
         return result;
       }, []);
+    
+      console.log("WHat are the line Items?: ", lineItems);
 
     const note = orderData.note || '';
     const tipReceived = orderData.total_tip_received || '0.00';
