@@ -241,10 +241,10 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     try{
     const orderData = req.body;
 
-    console.log("Examine Data!: " , orderData.line_items.map(item => ({
-      name: item.title,
-      properties: JSON.stringify(item.properties, null, 2)
-    })));
+    // console.log("Examine Data!: " , orderData.line_items.map(item => ({
+    //   name: item.title,
+    //   properties: JSON.stringify(item.properties, null, 2)
+    // })));
 
     console.log("Order Data: ", orderData);
     // date for receipt
@@ -309,7 +309,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
 
         return result;
       }, []);
-      
+
     const note = orderData.note || '';
     const tipReceived = orderData.total_tip_received || '0.00';
     const discount = orderData.total_discounts || '0.00';
