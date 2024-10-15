@@ -246,7 +246,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     //   properties: JSON.stringify(item.properties, null, 2)
     // })));
 
-    console.log("Order Data: ", orderData);
+    // console.log("Order Data: ", orderData);
     // date for receipt
     const date = new Date(orderData.created_at);
     const formattedDate = date.toLocaleString('en-US', {
@@ -274,9 +274,11 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
         console.log("1")
         // const properties = JSON.parse(item.properties);
         const properties = item.properties;
+        console.log("2")
 
         // check if at leas one element passes given test (returns true)
         const isMainProduct = properties.some(prop => prop.name === '_tpo_is_main_product' && prop.value === '1');
+        console.log("3")
 
         // if main product, add to print result
         if(isMainProduct){
@@ -286,11 +288,14 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
             unitPrice: item.price,
             addOns: [] // To store any add-ons that belong to this main product
           }
+          console.log("4")
 
           // Store add-on keys belonging to main product
           const addOnKeys = properties.find(prop => prop.name === '_tpo_add_on_keys')?.value || '[]'; // ensure no error is thrown
-          console.log("2")
-          const parsedAddOnKeys = JSON.parse(addOnKeys);
+          console.log("5")
+
+          // const parsedAddOnKeys = JSON.parse(addOnKeys);
+          console.log("6")
 
           result.push(mainProduct);
 
@@ -301,7 +306,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
             const mainProductId = addOnProperties.find(prop => prop.name === '_tpo_main_product_id')?.value;
 
             // If the add-on belongs to the current main product, add it under the main product
-            if (parsedAddOnKeys.includes(mainProductId)) {
+            if (addOnKeys.includes(mainProductId)) {
               mainProduct.addOns.push({
                 name: addOnItem.title,
                 quantity: addOnItem.quantity,
