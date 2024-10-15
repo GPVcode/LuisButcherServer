@@ -293,16 +293,19 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
           console.log("5")
 
           console.log("6")
+          console.log('itemmm: ', item.properties)
 
-          item.forEach(mainProductItem => {
-            if(mainProductItem.name.charAt(0) !== "_"){
+
+          Object.entries(item).forEach(([key, value]) => {
+
+            if(key.charAt(0) !== "_"){
               mainProduct.addOns.push({
-                name: mainProductItem.name,
-                value: mainProductItem.value
-              })
+                name: key,
+                value: value
+              });
             }
-          })
-          
+          });
+
           orderData.line_items.forEach(addOnItem => {
             // const addOnProperties = JSON.parse(addOnItem.properties);
             const addOnProperties = addOnItem.properties;
