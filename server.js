@@ -173,19 +173,8 @@ async function printOrder(orderDetails) {
     const apiKey = process.env.PRINTNODE_API_KEY;
     const printerId = process.env.PRINTER_ID;
 
-    console.log("Line ")
-
-
     // Create receipt content
-    const printContent = `
-    Order Number: #${orderDetails.orderNumber}
-    Order Received: ${orderDetails.createdAt}
-    Pick Up Day: ${orderDetails.pickupDay}
-    Pick Up Time: ${orderDetails.pickupTime}
-    Customer: ${orderDetails.customerName}
-    Phone: ${orderDetails.customerPhone}
-    ------------------------------\n
-    ${orderDetails.lineItems.map(item => {
+    const printContent = `Order Number: #${orderDetails.orderNumber}\nOrder Received: ${orderDetails.createdAt}\nPick Up Day: ${orderDetails.pickupDay}\nPick Up Time: ${orderDetails.pickupTime}\nCustomer: ${orderDetails.customerName}\nPhone: ${orderDetails.customerPhone}\n------------------------------\n${orderDetails.lineItems.map(item => {
         // Pad the item name to ensure alignment
         const itemLine = `${item.quantity} x ${item.name} - $${item.unitPrice}\n`;
 
@@ -198,22 +187,10 @@ async function printOrder(orderDetails) {
         // const priceLine = ` - $${item.unitPrice}`;
 
         // return `${itemLine}${priceLine}`;
-    }).join('')}\n
-    ------------------------------
-    Note: ${orderDetails.note}
-    Subtotal: $${orderDetails.subtotal}
-    Discount: -$${orderDetails.discount}
-    Tip: $${orderDetails.tipReceived}
-    Taxes: $${orderDetails.tax}
-    ------------------------------\n
-    Total: $${orderDetails.totalPrice}\n
-    ------------------------------\n
-    Payment Method: ${orderDetails.paymentMethod}
-    Paid: ${orderDetails.paid ? 'Yes' : 'No'}\n\n\n
-    `;
+    }).join('')}\n------------------------------\nNote: ${orderDetails.note}\nSubtotal: $${orderDetails.subtotal}\nDiscount: -$${orderDetails.discount}\nTip: $${orderDetails.tipReceived}\nTaxes: $${orderDetails.tax}\n------------------------------\nTotal: $${orderDetails.totalPrice}\n------------------------------\nPayment Method: ${orderDetails.paymentMethod}\nPaid: ${orderDetails.paid ? 'Yes' : 'No'}\n\n\n`;
 
-    console.log("Printing content:", printContent);
-    console.log("Print order function confirmed");
+    // console.log("Printing content:", printContent);
+    // console.log("Print order function confirmed");
 
     try {
       const response = await axios.post(
