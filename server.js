@@ -36,7 +36,7 @@ async function printOrder(orderDetails) {
     const printerId = process.env.PRINTER_ID;
 
     // Create receipt content
-    const printContent = `\x1B\x61\x00\x1B\x21\x00Order Number: #${orderDetails.orderNumber}\x1B\x61\x00\x1B\x21\x00\nOrder Received: ${orderDetails.createdAt}\nPick Up Day: ${orderDetails.pickupDay}\nPick Up Time: ${orderDetails.pickupTime}\nCustomer: ${orderDetails.customerName}\nPhone: ${orderDetails.customerPhone}\n------------------------------\n${orderDetails.lineItems.map(item => {
+    const printContent = `\x1B\x21\x10Order Number: #${orderDetails.orderNumber}\x1B\x21\x00\nOrder Received: ${orderDetails.createdAt}\nPick Up Day: ${orderDetails.pickupDay}\nPick Up Time: ${orderDetails.pickupTime}\nCustomer: ${orderDetails.customerName}\nPhone: ${orderDetails.customerPhone}\n------------------------------\n${orderDetails.lineItems.map(item => {
         // Pad the item name to ensure alignment
         const itemLine = `${item.quantity} x ${item.name} - $${item.unitPrice}\n`;
 
@@ -119,11 +119,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
 
           // Store add-on keys belonging to main product
           const addOnKeys = properties.find(prop => prop.name === '_tpo_add_on_keys')?.value || '[]'; // JSON string of add-on keys. Ensure no error is thrown
-          console.log("5")
           const parsedAddOnKeys = JSON.parse(addOnKeys);
-
-          console.log("6")
-          console.log('itemmm: ', item.properties)
 
           orderData.line_items.forEach(addOnItem => {
             const addOnProperties = addOnItem.properties;
@@ -132,7 +128,6 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
             // console.log("ADDON: ", addOnProperties);
             // If the add-on belongs to the current main product, add it under the main product
             if (parsedAddOnKeys.includes(addOnKey)) {
-              console.log("touch");
               mainProduct.addOns.push({
                 name: addOnItem.title,
                 quantity: addOnItem.quantity,
