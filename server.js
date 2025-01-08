@@ -36,7 +36,7 @@ async function printOrder(orderDetails) {
     const printerId = process.env.PRINTER_ID;
 
     // Create receipt content
-    const printContent = `\x1B\x21\x10Order Number: #${orderDetails.orderNumber}\x1B\x21\x00\nOrder Received: ${orderDetails.createdAt}\nPick Up Day: ${orderDetails.pickupDay}\nPick Up Time: ${orderDetails.pickupTime}\nCustomer: ${orderDetails.customerName}\nPhone: ${orderDetails.customerPhone}\n------------------------------\n${orderDetails.lineItems.map(item => {
+    const printContent = `\x1B\x61\x00\x1B\x21\x10Order Number: #${orderDetails.orderNumber}\x1B\x21\x00\nOrder Received: ${orderDetails.createdAt}\nPick Up Day: ${orderDetails.pickupDay}\nPick Up Time: ${orderDetails.pickupTime}\nCustomer: ${orderDetails.customerName}\nPhone: ${orderDetails.customerPhone}\n------------------------------\n${orderDetails.lineItems.map(item => {
         // Pad the item name to ensure alignment
         const itemLine = `${item.quantity} x ${item.name} - $${item.unitPrice}\n`;
 
@@ -47,7 +47,7 @@ async function printOrder(orderDetails) {
 
         return itemLine + addOnLines;
 
-    }).join('')}------------------------------\nNote: ${orderDetails.note}\nSubtotal: $${orderDetails.subtotal}\nDiscount: -$${orderDetails.discount}\nTip: $${orderDetails.tipReceived}\nTaxes: $${orderDetails.tax}\n------------------------------\nTotal: $${orderDetails.totalPrice}\n------------------------------\nPayment Method: ${orderDetails.paymentMethod}\nPaid: ${orderDetails.paid ? 'Yes' : 'No'}\n\n\n\n\n \x1D\x56\x00`;
+    }).join('')}------------------------------\nNote: ${orderDetails.note}\nSubtotal: $${orderDetails.subtotal}\nDiscount: -$${orderDetails.discount}\nTip: $${orderDetails.tipReceived}\nTaxes: $${orderDetails.tax}\n------------------------------\nTotal: $${orderDetails.totalPrice}\n------------------------------\nPayment Method: ${orderDetails.paymentMethod}\nPaid: ${orderDetails.paid ? 'Yes' : 'No'}\n\n\n\n\n\x1D\x56\x00`;
 
 
     try {
