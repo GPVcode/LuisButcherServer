@@ -36,7 +36,7 @@ async function printOrder(orderDetails) {
     const printerId = process.env.PRINTER_ID;
 
     // Create receipt content
-    const printContent = `Order Number: #${orderDetails.orderNumber}\nOrder Received: ${orderDetails.createdAt}\nPick Up Day: ${orderDetails.pickupDay}\nPick Up Time: ${orderDetails.pickupTime}\nCustomer: ${orderDetails.customerName}\nPhone: ${orderDetails.customerPhone}\n------------------------------\n${orderDetails.lineItems.map(item => {
+    const printContent = `\x1B\x21\x00Order Number: #${orderDetails.orderNumber}\nOrder Received: ${orderDetails.createdAt}\nPick Up Day: ${orderDetails.pickupDay}\nPick Up Time: ${orderDetails.pickupTime}\nCustomer: ${orderDetails.customerName}\nPhone: ${orderDetails.customerPhone}\n------------------------------\n${orderDetails.lineItems.map(item => {
         // Pad the item name to ensure alignment
         const itemLine = `${item.quantity} x ${item.name} - $${item.unitPrice}\n`;
 
@@ -103,7 +103,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
 
         const properties = item.properties;
 
-        // check if at leas one element passes given test (returns true)
+        // check if at least one element passes given test (returns true)
         const isMainProduct = properties.some(prop => prop.name === '_tpo_is_main_product' && prop.value === '1');
 
         // if main product, add to print result
