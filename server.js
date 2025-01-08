@@ -36,7 +36,7 @@ async function printOrder(orderDetails) {
     const printerId = process.env.PRINTER_ID;
 
     // Create receipt content
-    const printContent = `\x1B\x61\x01\x1B\x21\x10Order Number: #${orderDetails.orderNumber}\x1B\x21\x00\nOrder Received: ${orderDetails.createdAt}\nPick Up Day: ${orderDetails.pickupDay}\nPick Up Time: ${orderDetails.pickupTime}\nCustomer: ${orderDetails.customerName}\nPhone: ${orderDetails.customerPhone}\n------------------------------\n${orderDetails.lineItems.map(item => {
+    const printContent = `\x1B\x61\x01\x1B\x21\x10Order Number: #${orderDetails.orderNumber}\x1B\x61\x00\x1B\x21\x00\nOrder Received: ${orderDetails.createdAt}\nPick Up Day: ${orderDetails.pickupDay}\nPick Up Time: ${orderDetails.pickupTime}\nCustomer: ${orderDetails.customerName}\nPhone: ${orderDetails.customerPhone}\n------------------------------\n${orderDetails.lineItems.map(item => {
         // Pad the item name to ensure alignment
         const itemLine = `${item.quantity} x ${item.name} - $${item.unitPrice}\n`;
 
