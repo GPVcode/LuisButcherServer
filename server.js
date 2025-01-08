@@ -129,7 +129,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
             const addOnProperties = addOnItem.properties;
 
             const addOnKey = addOnProperties.find(prop => prop.name === '_tpo_add_on_key')?.value;
-            console.log("ADDON: ", addOnProperties);
+            // console.log("ADDON: ", addOnProperties);
             // If the add-on belongs to the current main product, add it under the main product
             if (parsedAddOnKeys.includes(addOnKey)) {
               console.log("touch");
