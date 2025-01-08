@@ -36,7 +36,7 @@ async function printOrder(orderDetails) {
     const printerId = process.env.PRINTER_ID;
 
     // Create receipt content
-    const printContent = `\x1B\x61\x01\x1B\x21\x10Order Number: #${orderDetails.orderNumber}\x1B\x61\x00\x1B\x21\x00\nOrder Received: ${orderDetails.createdAt}\nPick Up Day: ${orderDetails.pickupDay}\nPick Up Time: ${orderDetails.pickupTime}\nCustomer: ${orderDetails.customerName}\nPhone: ${orderDetails.customerPhone}\n------------------------------\n${orderDetails.lineItems.map(item => {
+    const printContent = `\x1B\x61\x00\x1B\x21\x00Order Number: #${orderDetails.orderNumber}\x1B\x61\x00\x1B\x21\x00\nOrder Received: ${orderDetails.createdAt}\nPick Up Day: ${orderDetails.pickupDay}\nPick Up Time: ${orderDetails.pickupTime}\nCustomer: ${orderDetails.customerName}\nPhone: ${orderDetails.customerPhone}\n------------------------------\n${orderDetails.lineItems.map(item => {
         // Pad the item name to ensure alignment
         const itemLine = `${item.quantity} x ${item.name} - $${item.unitPrice}\n`;
 
@@ -95,7 +95,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     console.log("Order Data: ", orderData.note_attributes)
     const createdAt = formattedDate;
     const pickupTime = (orderData.note_attributes[6] && orderData.note_attributes[6].value !== undefined ) ? orderData.note_attributes[6].value : '';
-    const pickupDay = (orderData.note_attributes[1] && orderData.note_attributes[1].value !== undefined ) ? orderData.note_attributes[1].value : '';
+    const pickupDay = (orderData.note_attributes[4] && orderData.note_attributes[4].value !== undefined ) ? orderData.note_attributes[4].value : '';
     console.log("Pick up day", pickupDay)
     const customerName = `${orderData.customer.first_name} ${orderData.customer.last_name}`;
     const customerEmail = orderData.customer.email;
