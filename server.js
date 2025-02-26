@@ -49,6 +49,7 @@ async function printOrder(orderDetails) {
 
     }).join('')}------------------------------\nNote: ${orderDetails.note}\nSubtotal: $${orderDetails.subtotal}\nDiscount: -$${orderDetails.discount}\nTip: $${orderDetails.tipReceived}\nTaxes: $${orderDetails.tax}\n------------------------------\nTotal: $${orderDetails.totalPrice}\n------------------------------\nPayment Method: ${orderDetails.paymentMethod}\nPaid: ${orderDetails.paid ? 'Yes' : 'No'}\n\n\n\n\n\x1D\x56\x00`;
 
+    console.log('Print content:', printContent);
 
     try {
       const response = await axios.post(
@@ -95,9 +96,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     // console.log("Order Data: ", orderData.note_attributes)
     const createdAt = formattedDate;
     const pickupTime = (orderData.note_attributes[6] && orderData.note_attributes[6].value !== undefined ) ? orderData.note_attributes[6].value : '';
-    // const pickupDay = (orderData.note_attributes[1] && orderData.note_attributes[1].value !== undefined ) ? orderData.note_attributes[4].value : '';
     const pickupDay = orderData.note_attributes.find(attr => attr.name === 'Delivery Date')?.value || '';
-    // console.log("Pick up day", pickupDay)
     const customerName = `${orderData.customer.first_name} ${orderData.customer.last_name}`;
     const customerEmail = orderData.customer.email;
     const customerPhone = orderData.customer.phone ? orderData.customer.phone : '';
@@ -126,7 +125,6 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
             const addOnProperties = addOnItem.properties;
 
             const addOnKey = addOnProperties.find(prop => prop.name === '_tpo_add_on_key')?.value;
-            // console.log("ADDON: ", addOnProperties);
             // If the add-on belongs to the current main product, add it under the main product
             if (parsedAddOnKeys.includes(addOnKey)) {
               mainProduct.addOns.push({
