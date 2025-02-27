@@ -35,7 +35,7 @@ async function printOrder(orderDetails) {
     const apiKey = process.env.PRINTNODE_API_KEY;
     const printerId = process.env.PRINTER_ID;
 
-    console.log(orderDetails.lineItems);
+    console.log("What are the ORDER DEEETS?" ,  orderDetails);
 
     // Create receipt content
     const printContent = `\x1B\x21\x10Order Number: #${orderDetails.orderNumber}\x1B\x21\x00\nOrder Received: ${orderDetails.createdAt}\nPick Up Day: ${orderDetails.pickupDay}\nPick Up Time: ${orderDetails.pickupTime}\nCustomer: ${orderDetails.customerName}\nPhone: ${orderDetails.customerPhone}\n------------------------------\n${orderDetails.lineItems.map(item => {
