@@ -105,12 +105,17 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
 
     const lineItems = orderData.line_items.reduce((result, item) => {
 
+        console.log("Show me the item: ", item);
+
         const properties = item.properties;
 
-        console.log("Properties: ", properties);
+        console.log("Show me the properties: ", properties);
 
         // check if at least one element passes given test (returns true)
-        const isMainProduct = properties.some(prop => prop.name === '_tpo_is_main_product' && prop.value === '1');
+        // const isMainProduct = properties.some(prop => prop.name === '_tpo_is_main_product' && prop.value === '1');
+        const isMainProduct = properties.some(({ name }) => name === '_tpo_is_main_product' || name === '1_tpo_main_product_id');
+
+        console.log("Is Main Product?????: ", isMainProduct);
 
         // if main product, add to print result
         if(isMainProduct){
