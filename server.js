@@ -107,6 +107,8 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
 
         const properties = item.properties;
 
+        console.log("Properties: ", properties);
+
         // check if at least one element passes given test (returns true)
         const isMainProduct = properties.some(prop => prop.name === '_tpo_is_main_product' && prop.value === '1');
 
@@ -152,7 +154,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     const paymentMethod = orderData.payment_gateway_names.join(', ');
     const paid = orderData.financial_status === 'paid';
 
-    // Send order details to PrintNode for printing
+    // Send ORDER DETAILS to PrintNode for printing
     await printOrder({ 
         orderNumber, customerName, customerPhone, createdAt, pickupDay, pickupTime, lineItems, note,
         subtotal, discount, tax, tipReceived, totalPrice,
