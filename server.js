@@ -112,19 +112,24 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
         console.log("Show me the properties: ", properties);
 
         // check if at least one element passes given test (returns true)
-        // const isMainProduct = properties.some(prop => prop.name === '_tpo_is_main_product' && prop.value === '1');
-        const isMainProduct = properties.some(({ name }) => name === '_tpo_is_main_product' || name === '1_tpo_main_product_id');
+        const isMainProductWithAddons = properties.some(prop => prop.name === '_tpo_is_main_product' && prop.value === '1');
+        // const isMainProduct = properties.some(({ name }) => name === '_tpo_is_main_product' || name === '1_tpo_main_product_id');
+        const isMainProduct = properties.length === 0;
 
-        console.log("Is Main Product?????: ", isMainProduct);
+
+        console.log("has isMainProductWithAddons?????: ", isMainProductWithAddons);  
+        console.log("has isMainProduct?????: ", isMainProduct);
+
 
         // if main product, add to print result
-        if(isMainProduct){
+        if(isMainProductWithAddons){
+
           const mainProduct = {
             name: item.title,
             quantity: item.quantity,
             unitPrice: item.price,
             addOns: [] // To store any add-ons that belong to this main product
-          }
+          };
 
           // Store add-on keys belonging to main product
           const addOnKeys = properties.find(prop => prop.name === '_tpo_add_on_keys')?.value || '[]'; // JSON string of add-on keys. Ensure no error is thrown
@@ -145,7 +150,16 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
           });
 
           result.push(mainProduct);
+        } else if(isMainProduct){
+          const mainProduct = {
+            name: item.title,
+            quantity: item.quantity,
+            unitPrice: item.price,
+            addOns: []
+          };
+          result.push(mainProduct);
         }
+
 
         return result;
       }, []);
