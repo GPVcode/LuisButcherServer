@@ -80,6 +80,7 @@ async function printOrder(orderDetails) {
 app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     try{
     const orderData = req.body;
+    console.log("Order Data LOOK FOR SHIPPING: ", orderData)
 
     // date for receipt
     const date = new Date(orderData.created_at);
@@ -95,7 +96,6 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
 
     // Extract necessary information from Shopify order data
     const orderNumber = orderData.order_number;
-    // console.log("Order Data: ", orderData.note_attributes)
     const createdAt = formattedDate;
     const pickupTime = (orderData.note_attributes[6] && orderData.note_attributes[6].value !== undefined ) ? orderData.note_attributes[6].value : '';
     const pickupDay = orderData.note_attributes.find(attr => attr.name === 'Delivery Date')?.value || '';
