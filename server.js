@@ -34,8 +34,6 @@ async function printOrder(orderDetails) {
 
     const apiKey = process.env.PRINTNODE_API_KEY;
     const printerId = process.env.PRINTER_ID;
-
-    console.log("What are the ORDER DEEETS?" ,  orderDetails);
     
     // Create receipt content
     const printContent = `\x1B\x21\x10Order Number: #${orderDetails.orderNumber}\x1B\x21\x00\nDelivery Method: ${orderDetails.deliveryMethod}\nOrder Received: ${orderDetails.createdAt}\nPick Up Day: ${orderDetails.pickupDay}\nPick Up Time: ${orderDetails.pickupTime}\nCustomer: ${orderDetails.customerName}\nPhone: ${orderDetails.customerPhone}\n------------------------------\n${orderDetails.lineItems.map(item => {
@@ -50,8 +48,6 @@ async function printOrder(orderDetails) {
         return itemLine + addOnLines;
 
     }).join('')}------------------------------\nNote: ${orderDetails.note}\nSubtotal: $${orderDetails.subtotal}\nDiscount: -$${orderDetails.discount}\nTip: $${orderDetails.tipReceived}\nTaxes: $${orderDetails.tax}\n------------------------------\nTotal: $${orderDetails.totalPrice}\n------------------------------\nPayment Method: ${orderDetails.paymentMethod}\nPaid: ${orderDetails.paid ? 'Yes' : 'No'}\n\n\n\n\n\x1D\x56\x00`;
-
-    console.log('Print content:', printContent);
 
     try {
       const response = await axios.post(
@@ -106,21 +102,13 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
 
     const lineItems = orderData.line_items.reduce((result, item) => {
 
-        console.log("Show me the item: ", item);
-
+        // store properties for reuse
         const properties = item.properties;
-
-        console.log("Show me the properties: ", properties);
 
         // check if at least one element passes given test (returns true)
         const isMainProductWithAddons = properties.some(prop => prop.name === '_tpo_is_main_product' && prop.value === '1');
         // const isMainProduct = properties.some(({ name }) => name === '_tpo_is_main_product' || name === '1_tpo_main_product_id');
         const isMainProduct = properties.length === 0;
-
-
-        console.log("has isMainProductWithAddons?????: ", isMainProductWithAddons);  
-        console.log("has isMainProduct?????: ", isMainProduct);
-
 
         // if main product, add to print result
         if(isMainProductWithAddons){
@@ -160,7 +148,6 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
           };
           result.push(mainProduct);
         }
-
 
         return result;
       }, []);
