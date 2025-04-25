@@ -1,6 +1,5 @@
 import express from 'express';
 import axios from 'axios';
-import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
 
@@ -67,7 +66,7 @@ async function printOrder(orderDetails) {
         }
       );
   
-      console.log('Print job created:', response.data);
+      console.log('Sucessfully created print job.', response.data);
     } catch (error) {
       console.error('Error sending print job:', error.response ? error.response.data : error.message);
     }
@@ -76,7 +75,6 @@ async function printOrder(orderDetails) {
 app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     try{
     const orderData = req.body;
-    console.log("Order Data LOOK FOR SHIPPING: ", orderData)
 
     // date for receipt
     const date = new Date(orderData.created_at);
