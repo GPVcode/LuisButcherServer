@@ -101,9 +101,10 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     const customerEmail = orderData.customer.email;
     const customerPhone = orderData.customer.phone ? orderData.customer.phone : '';
 
+    console.log("pickupTime: ", pickupTime);
     const lineItems = orderData.line_items.reduce((result, item) => {
 
-        // store properties for reuse
+"        // store properties for reuse
         const properties = item.properties;
 
         // check if at least one element passes given test (returns true)
