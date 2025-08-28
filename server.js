@@ -95,7 +95,7 @@ app.post('/shopify-order-webhook', verifyShopifyWebhook, async (req, res) => {
     const orderNumber = orderData.order_number;
     const createdAt = formattedDate;
     const deliveryMethod = orderData.note_attributes.find(attr => attr.name === 'Delivery Method')?.value || 'Pickup';
-    const pickupTime = (orderData.note_attributes[6] && orderData.note_attributes[6].value !== undefined ) ? orderData.note_attributes[6].value : 'N/A';
+    const pickupTime = (orderData.note_attributes[7] && orderData.note_attributes[7].value !== undefined ) ? orderData.note_attributes[7].value : 'N/A';
     const pickupDay = orderData.note_attributes.find(attr => attr.name === 'Delivery Date')?.value || 'N/A';
     const customerName = `${orderData.customer.first_name} ${orderData.customer.last_name}`;
     const customerEmail = orderData.customer.email;
