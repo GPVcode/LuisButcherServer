@@ -30,7 +30,10 @@ function verifyShopifyWebhook(req, res, next){
 
 // Function to send print job to PrintNode
 async function printOrder(orderDetails) {
+    console.log("pickup time: ", orderDetails.pickupTime);
 
+
+    console.log("Order details: ", orderDetails);
     const apiKey = process.env.PRINTNODE_API_KEY;
     const printerId = process.env.PRINTER_ID;
     
